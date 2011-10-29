@@ -1,0 +1,7 @@
+= HeimdallR
+
+HeimdallR is a command line application to help diagnose VoIP network
+issues by wrapping tools like tshark and tcpdump.
+
+:include:heimdallr.rdoc
+

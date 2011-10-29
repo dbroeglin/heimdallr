@@ -1,0 +1,5 @@
+= heimdallr
+
+Generate this with
+    heimdallr rdoc
+After you have described your command line interface
