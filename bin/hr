@@ -12,8 +12,12 @@ unless File.respond_to? :realpath
 end
 $: << File.expand_path(File.dirname(File.realpath(__FILE__)) + '/../lib')
 require 'rubygems'
+
+require 'bundler/setup'
+
 require 'gli'
-require 'heimdallr_version'
+require 'heimdallr/version'
+require 'heimdallr'
 
 include GLI
 
@@ -24,26 +28,31 @@ version Heimdallr::VERSION
 desc 'Describe some switch here'
 switch [:s,:switch]
 
-desc 'Describe some flag here'
-default_value 'the default'
-arg_name 'The name of the argument'
-flag [:f,:flagname]
 
-desc 'Describe hr here'
-arg_name 'Describe arguments to hr here'
-command :hr do |c|
-  c.desc 'Describe a switch to hr'
-  c.switch :s
+desc 'Monitors trafic for quality indicators'
+arg_name ''
+command :monitor do |c|
+  c.desc 'Expression the dumped packets have to match'
+  c.default_value ''
+  c.arg_name 'expression'
+  c.flag [:f, :capture_filter]
+  
+  c.desc 'Duration in seconds of each capture period before the capture files are analyzed'
+  c.default_value 30
+  c.arg_name 'duration'
+  c.flag [:d, :duration]
+  
+  c.desc 'Name of the network interface or pipe used for packet capture'
+  c.arg_name 'capture interface'
+  c.flag [:i, :interface]
 
-  c.desc 'Describe a flag to hr'
-  c.default_value 'default'
-  c.flag :f
-  c.action do |global_options,options,args|
-
-    # Your command logic here
-     
-    # If you have any errors, just raise them
-    # raise "that command made no sense"
+  c.action do |global_opts, opts, args|
+    monitor = Heimdallr::Monitor::new(opts)
+    begin
+      monitor.run_dumper
+    ensure
+      monitor.kill_dumper
+    end
   end
 end
 
